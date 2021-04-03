@@ -12,20 +12,24 @@ using IntrinsicMatrix = Eigen::Matrix<double, 3, 3>;
 
 int main() {
   Matrix ROI_corners;
-  ROI_corners(0, 0) = 20;
-  ROI_corners(0, 1) = 340;
+  ROI_corners(0, 0) = 14;
+  ROI_corners(0, 1) = 334;
   ROI_corners(0, 2) = 1;
-  ROI_corners(1, 0) = 20;
-  ROI_corners(1, 1) = 170;
+  ROI_corners(1, 0) = 48;
+  ROI_corners(1, 1) = 154;
   ROI_corners(1, 2) = 1;
-  ROI_corners(2, 0) = 555;
-  ROI_corners(2, 1) = 340;
+  ROI_corners(2, 0) = 586;
+  ROI_corners(2, 1) = 351;
   ROI_corners(2, 2) = 1;
-  ROI_corners(3, 0) = 555;
-  ROI_corners(3, 1) = 170;
+  ROI_corners(3, 0) = 588;
+  ROI_corners(3, 1) = 180;
   ROI_corners(3, 2) = 1;
 
-  float lambda = 800.0f;
+  float lambda_1 = 748.0f;
+  float lambda_2 = 946.0f;
+  float lambda_3 = 828.0f;
+  float lambda_4 = 1020.0f;
+  float lambda[4] = {748.0f, 946.0f, 828.0f, 1020.0f};
 
   /**
    * lambda * x = K * X
@@ -39,20 +43,26 @@ int main() {
    * parameters we will be able to get the image coordinates.
    */
 
+// 1827.0029296875, 0.0, 1920.650390625, 0.0, 1826.805419921875, 1102.6566162109375, 0.0, 0.0, 1.0
+
   IntrinsicMatrix params;
-  params(0, 0) = 1202.806884765625;
+  params(0, 0) = 1827.0029296875;
   params(0, 1) = 0.0;
-  params(0, 2) = 1275.52734375;
+  params(0, 2) = 1920.650390625;
 
   params(1, 0) = 0.0;
-  params(1, 1) = 1202.2362060546875;
-  params(1, 2) = 733.5911254882812;
+  params(1, 1) = 1826.805419921875;
+  params(1, 2) = 1102.6566162109375;
   params(2, 0) = 0.0;
   params(2, 1) = 0.0;
   params(2, 0) = 1.0;
-  IntrinsicMatrix back_to_image_coords_matrix = params.inverse() * lambda;
+  IntrinsicMatrix params_inv = params.inverse();
 
-  std::cout << ROI_corners * back_to_image_coords_matrix << std::endl;
+  for(size_t row=0; row < ROI_corners.size(); row++) {
+      std::cout << ROI_corners.block(row,0, 1, 3) << std::endl;
+      std::cout << "the camera coords : " << params_inv * lambda[row] * ROI_corners.block(row,0, 1, 3).transpose() << std::endl;
+      std::cout << "--------" << std::endl;
+  }
 
   return 0;
 }
